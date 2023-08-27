@@ -13,7 +13,9 @@ exports.handler = async (event, context) => {
   };
 
   //TODO: 取得対象のテーブル名をparamに宣言
-  const param = {};
+  const param = {
+    TableName,
+  };
 
   const command = new ScanCommand(param);
 
@@ -22,8 +24,10 @@ exports.handler = async (event, context) => {
     const users = (await client.send(command)).Items;
 
     //TODO: 全ユーザのpasswordを隠蔽する処理を記述
-
     //TODO: レスポンスボディを設定する
+     users?.forEach((item) => delete item?.password);
+    const unmarshalledUsersItems = users.map((item) => unmarshall(item));
+    response.body = JSON.stringify({ users: unmarshalledUsersItems });
   } catch (e) {
     response.statusCode = 500;
     response.body = JSON.stringify({

@@ -18,7 +18,12 @@ exports.handler = async (event, context) => {
   const userId = event.queryStringParameters?.userId;
 
   // TODO: 削除対象のテーブル名と削除したいデータのkeyをparamに設定
-  const param = {};
+  const param = {
+    TableName,
+    Key: marshall({
+      userId,
+    }),
+  };
 
   // データを削除するコマンドを用意
   const command = new DeleteItemCommand(param);
@@ -27,6 +32,7 @@ exports.handler = async (event, context) => {
     // client.send()を用いてデータを削除するコマンドを実行
     await client.send(command);
     // TODO: 成功後の処理を記載(status codeを指定する。)
+    response.statusCode = 204;
   } catch (e) {
     response.statusCode = 500;
     response.body = JSON.stringify({
